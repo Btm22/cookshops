@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURA Studio | Minimalist Catalog & Direct WhatsApp Checkout</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              whatsapp: '#25D366',
+              whatsappHover: '#1eb857'
+            },
+            surface: {
+              DEFAULT: '#121214',
+              secondary: '#18181b',
+              card: '#1f1f23',
+              border: '#27272a',
+              muted: '#71717a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar for sleek aesthetic */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #121214;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
+
+    .glass-panel {
+      background: rgba(24, 24, 27, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .badge-glow {
+      box-shadow: 0 0 15px -3px rgba(37, 211, 102, 0.35);
+    }
+  </style>
+</head>
+
+<body class="bg-[#0b0b0c] text-zinc-100 font-sans antialiased selection:bg-brand-whatsapp selection:text-black min-h-screen flex flex-col justify-between">
+
+  <!-- ================= TOP NOTIFICATION / MARQUEE ================= -->
+  <div class="bg-gradient-to-r from-emerald-950 via-zinc-900 to-emerald-950 border-b border-emerald-800/30 text-xs py-2 px-4 text-center tracking-wide text-emerald-300 font-medium flex items-center justify-center gap-2">
+    <span class="inline-block w-2 h-2 rounded-full bg-brand-whatsapp animate-ping"></span>
+    Direct WhatsApp Ordering Active &bull; Instant Confirmation & Free Priority Support
+  </div>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-surface-border/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-whatsapp to-emerald-300 flex items-center justify-center text-black font-extrabold text-xl shadow-lg shadow-brand-whatsapp/20 transition-transform duration-300 group-hover:scale-105">
+          A
+        </div>
+        <div>
+          <span class="text-xl font-bold tracking-tight text-white block leading-none">AURA</span>
+          <span class="text-[10px] tracking-widest text-zinc-400 font-semibold uppercase">Studio &bull; Goods</span>
+        </div>
+      </a>
+
+      <!-- Search & Filters Quick Nav -->
+      <div class="hidden md:flex items-center gap-1 bg-surface-card/60 p-1.5 rounded-full border border-surface-border">
+        <button onclick="filterCategory('all')" class="cat-pill active px-4 py-1.5 text-xs font-semibold rounded-full transition-all text-white bg-zinc-800 hover:text-white" data-cat="all">All Items</button>
+        <button onclick="filterCategory('Apparel')" class="cat-pill px-4 py-1.5 text-xs font-medium rounded-full text-zinc-400 hover:text-white transition-all" data-cat="Apparel">Apparel</button>
+        <button onclick="filterCategory('Carry')" class="cat-pill px-4 py-1.5 text-xs font-medium rounded-full text-zinc-400 hover:text-white transition-all" data-cat="Carry">Carry Goods</button>
+        <button onclick="filterCategory('Tech')" class="cat-pill px-4 py-1.5 text-xs font-medium rounded-full text-zinc-400 hover:text-white transition-all" data-cat="Tech">Desk & Tech</button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <!-- Direct Quick WhatsApp Chat -->
+        <a id="navWhatsappBtn" target="_blank" rel="noopener noreferrer" 
+           class="hidden sm:inline-flex items-center gap-2 text-xs font-semibold bg-surface-secondary border border-zinc-700/80 hover:border-brand-whatsapp text-zinc-200 px-3.5 py-2 rounded-xl transition duration-200 hover:text-brand-whatsapp">
+          <i class="ph-bold ph-whatsapp-logo text-base text-brand-whatsapp"></i>
+          <span>Ask Question</span>
+        </a>
+
+        <!-- Cart / Inquiry Drawer Trigger -->
+        <button id="openCartBtn" onclick="toggleCartModal(true)" class="relative p-2.5 rounded-xl bg-zinc-900 border border-zinc-700/70 hover:border-zinc-500 text-white transition group focus:outline-none focus:ring-2 focus:ring-brand-whatsapp/50" aria-label="Open Inquiry Cart">
+          <i class="ph ph-shopping-bag text-xl group-hover:scale-110 transition-transform"></i>
+          <span id="cartCountBadge" class="hidden absolute -top-1.5 -right-1.5 bg-brand-whatsapp text-black font-extrabold text-[11px] h-5 w-5 rounded-full flex items-center justify-center badge-glow">
+            0
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO & HIGHLIGHTS ================= -->
+  <main class="flex-grow">
+    <section class="relative overflow-hidden py-14 sm:py-20 border-b border-surface-border">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,211,102,0.08),transparent_50%)] pointer-events-none"></div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-brand-whatsapp text-xs font-semibold uppercase tracking-wider mb-5">
+          <i class="ph-fill ph-shield-check text-sm"></i>
+          Simple Direct-to-Consumer Inquiry
+        </div>
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight">
+          Curated Essentials. <br class="hidden sm:inline" />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 via-zinc-400 to-zinc-500">Zero Check-out Friction.</span>
+        </h1>
+        <p class="mt-4 text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto">
+          Select your variant, add to your inquiry bag or order directly on WhatsApp with pre-filled details. No account creation needed.
+        </p>
+
+        <!-- Dynamic Category Chips for Mobile -->
+        <div class="flex flex-wrap justify-center gap-2 mt-8 md:hidden">
+          <button onclick="filterCategory('all')" class="mobile-cat-pill active px-4 py-2 text-xs font-bold rounded-lg bg-zinc-800 text-white border border-zinc-700" data-cat="all">All</button>
+          <button onclick="filterCategory('Apparel')" class="mobile-cat-pill px-4 py-2 text-xs font-medium rounded-lg bg-surface-secondary text-zinc-400 border border-zinc-800" data-cat="Apparel">Apparel</button>
+          <button onclick="filterCategory('Carry')" class="mobile-cat-pill px-4 py-2 text-xs font-medium rounded-lg bg-surface-secondary text-zinc-400 border border-zinc-800" data-cat="Carry">Carry</button>
+          <button onclick="filterCategory('Tech')" class="mobile-cat-pill px-4 py-2 text-xs font-medium rounded-lg bg-surface-secondary text-zinc-400 border border-zinc-800" data-cat="Tech">Tech</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATALOG GRID SECTION ================= -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Search & Filters toolbar -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div class="relative w-full sm:w-80">
+          <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-lg"></i>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search products, materials..." 
+            oninput="handleSearch(this.value)"
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-card border border-surface-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-brand-whatsapp focus:ring-1 focus:ring-brand-whatsapp transition"
+          />
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <span id="productCounter" class="text-xs text-zinc-400 font-medium">Showing 6 products</span>
+          <select id="sortSelect" onchange="handleSort(this.value)" class="text-xs bg-surface-card border border-surface-border text-zinc-300 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-whatsapp">
+            <option value="featured">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PRODUCT CARDS GRID -->
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="noProductsFound" class="hidden text-center py-20">
+        <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto mb-4 text-zinc-500 text-2xl">
+          <i class="ph ph-package"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-1">No products found</h3>
+        <p class="text-sm text-zinc-400 max-w-sm mx-auto">Try clearing your search query or switching category filters to see available pieces.</p>
+        <button onclick="resetFilters()" class="mt-4 px-4 py-2 text-xs font-semibold rounded-lg bg-zinc-800 text-white hover:bg-zinc-700">Clear Search</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= INQUIRY CART SLIDE-OVER DRAWER ================= -->
+  <div id="cartModalBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none" onclick="toggleCartModal(false)"></div>
+  
+  <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-surface-card border-l border-surface-border z-50 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out translate-x-full">
+    
+    <!-- Drawer Header -->
+    <div class="p-6 border-b border-surface-border flex items-center justify-between bg-surface-secondary/50">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-brand-whatsapp text-lg">
+          <i class="ph-bold ph-shopping-bag"></i>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-white">Inquiry Cart</h2>
+          <p class="text-xs text-zinc-400">Order directly over WhatsApp</p>
+        </div>
+      </div>
+      <button onclick="toggleCartModal(false)" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition">
+        <i class="ph-bold ph-x text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Drawer Body / Item List -->
+    <div id="cartItemsList" class="flex-grow overflow-y-auto p-6 space-y-4">
+      <!-- Injected dynamically -->
+    </div>
+
+    <!-- Drawer Footer / WhatsApp Order Action -->
+    <div class="p-6 border-t border-surface-border bg-surface-secondary/60 space-y-4">
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs text-zinc-400">
+          <span>Items Selected:</span>
+          <span id="cartTotalItemsCount" class="font-medium text-zinc-200">0</span>
+        </div>
+        <div class="flex justify-between items-baseline text-sm">
+          <span class="text-zinc-300 font-semibold">Total Estimated Value:</span>
+          <span id="cartTotalPrice" class="text-xl font-extrabold text-white">$0.00</span>
+        </div>
+        <p class="text-[11px] text-zinc-500 italic">Shipping and local taxes will be finalized via WhatsApp chat.</p>
+      </div>
+
+      <!-- Customer Name & Notes Input (Optional) -->
+      <div class="space-y-2 pt-1">
+        <input 
+          type="text" 
+          id="customerNameInput" 
+          placeholder="Your Name (Optional)" 
+          class="w-full px-3.5 py-2 text-xs rounded-xl bg-zinc-900 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:border-brand-whatsapp"
+        />
+        <textarea 
+          id="customerNotesInput" 
+          rows="2" 
+          placeholder="Delivery location / instructions (Optional)" 
+          class="w-full px-3.5 py-2 text-xs rounded-xl bg-zinc-900 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:border-brand-whatsapp resize-none"
+        ></textarea>
+      </div>
+
+      <!-- Action Button -->
+      <button 
+        id="sendWhatsAppOrderBtn" 
+        onclick="dispatchWhatsAppCartOrder()" 
+        class="w-full py-3.5 px-4 rounded-xl bg-brand-whatsapp hover:bg-brand-whatsappHover active:scale-[0.99] text-black font-extrabold text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-brand-whatsapp/25 transition duration-150 disabled:opacity-40 disabled:cursor-not-allowed">
+        <i class="ph-bold ph-whatsapp-logo text-xl"></i>
+        <span>Send Order via WhatsApp</span>
+      </button>
+
+      <button onclick="clearAllCart()" class="w-full text-center text-xs text-zinc-500 hover:text-red-400 py-1 transition">
+        Clear Inquiry Cart
+      </button>
+    </div>
+  </aside>
+
+  <!-- ================= FLOATING CART INQUIRY TRIGGER ================= -->
+  <div id="floatingCartBtn" class="fixed bottom-6 right-6 z-30 transition-transform duration-300 translate-y-24">
+    <button onclick="toggleCartModal(true)" class="flex items-center gap-3 bg-zinc-900 text-white pl-4 pr-5 py-3 rounded-full shadow-2xl border border-zinc-700 hover:border-brand-whatsapp transition group active:scale-95">
+      <div class="relative">
+        <i class="ph-bold ph-shopping-bag text-xl text-brand-whatsapp"></i>
+        <span id="floatingBadgeCount" class="absolute -top-2 -right-2 bg-brand-whatsapp text-black font-extrabold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+      </div>
+      <div class="text-left">
+        <div class="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Order List</div>
+        <div id="floatingCartTotal" class="text-xs font-bold text-white">$0.00</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-surface-secondary border-t border-surface-border text-zinc-400 text-xs py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+      
+      <div class="space-y-3 md:col-span-2">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded bg-brand-whatsapp flex items-center justify-center text-black font-bold text-xs">A</div>
+          <span class="text-white font-bold tracking-wider">AURA STUDIO</span>
+        </div>
+        <p class="text-zinc-400 max-w-sm">
+          A lean direct inquiry catalog model. Test product ideas, validate pricing, and take orders through WhatsApp with zero marketplace commissions.
+        </p>
+        <p class="text-[11px] text-zinc-500">&copy; 2026 AURA Studio. Built with the WhatsApp Validation Pattern.</p>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-3">How It Works</h4>
+        <ul class="space-y-2">
+          <li>1. Browse our live inventory</li>
+          <li>2. Pick your desired variant</li>
+          <li>3. Order direct or compile a list</li>
+          <li>4. Confirm payment in WhatsApp chat</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-3">Support & Inquiries</h4>
+        <ul class="space-y-2">
+          <li>WhatsApp: +1 (555) 019-2834</li>
+          <li>Hours: Mon - Sat (9 AM - 7 PM)</li>
+          <li>Location: Express Local & Int. Shipping</li>
+        </ul>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ================= TOAST NOTIFICATION CONTAINER ================= -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-zinc-900 border border-brand-whatsapp/60 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
+    <i class="ph-fill ph-check-circle text-brand-whatsapp text-lg"></i>
+    <span id="toastMsg">Added to inquiry cart</span>
+  </div>
+
+  <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
+  <script>
+    /* -------------------------------------------------------------
+       CONFIGURATION
+       Update with your real WhatsApp Business phone number (with country code, no + or symbols)
+    -------------------------------------------------------------- */
+    const STORE_CONFIG = {
+      brandName: "AURA Studio",
+      whatsappNumber: "15550192834", // e.g., 919876543210 or 15550192834
+      currencySymbol: "$"
+    };
+
+    /* -------------------------------------------------------------
+       PRODUCT CATALOG DATA
+    -------------------------------------------------------------- */
+    const PRODUCTS = [
+      {
+        id: "prod-001",
+        name: "Heavyweight Boxy Tee (280 GSM)",
+        category: "Apparel",
+        price: 38.00,
+        badge: "In Stock",
+        badgeType: "stock",
+        description: "Custom milled French Terry cotton. Pre-shrunk with a relaxed modern boxy drape.",
+        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
+        variants: ["Small", "Medium", "Large", "X-Large"]
+      },
+      {
+        id: "prod-002",
+        name: "Waxed Canvas Commuter Roll-Top",
+        category: "Carry",
+        price: 110.00,
+        badge: "Limited Edition",
+        badgeType: "limited",
+        description: "Weather-resistant 18oz Martexin waxed duck canvas with Fidlock magnetic closures.",
+        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+        variants: ["Field Tan", "Matte Obsidian", "Forest Olive"]
+      },
+      {
+        id: "prod-003",
+        name: "CNC Anodized Desk Organiser",
+        category: "Tech",
+        price: 52.00,
+        badge: "Bestseller",
+        badgeType: "bestseller",
+        description: "Precision-milled aerospace grade 6061 aluminium with silicone anti-slip feet.",
+        image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=800&q=80",
+        variants: ["Space Grey", "Silver Frost", "Midnight Matte"]
+      },
+      {
+        id: "prod-004",
+        name: "Overdyed Utility Cargo Pant",
+        category: "Apparel",
+        price: 88.00,
+        badge: "Low Stock",
+        badgeType: "limited",
+        description: "Durable ripstop cotton fabric with darted knee articulation and deep storage cargo pockets.",
+        image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=800&q=80",
+        variants: ["30 Waist", "32 Waist", "34 Waist", "36 Waist"]
+      },
+      {
+        id: "prod-005",
+        name: "Full-Grain Italian Leather Folio",
+        category: "Carry",
+        price: 74.00,
+        badge: "In Stock",
+        badgeType: "stock",
+        description: "Vegetable-tanned Buttero leather tailored for 13\" and 14\" laptops and A5 notebooks.",
+        image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80",
+        variants: ["Cognac Brown", "Jet Black"]
+      },
+      {
+        id: "prod-006",
+        name: "Precision Walnut Headphone Stand",
+        category: "Tech",
+        price: 44.00,
+        badge: "Handcrafted",
+        badgeType: "bestseller",
+        description: "Solid North American black walnut base with integrated cable management reservoir.",
+        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80",
+        variants: ["Walnut & Brass", "Walnut & Black Steel"]
+      }
+    ];
+
+    /* -------------------------------------------------------------
+       STATE MANAGEMENT
+    -------------------------------------------------------------- */
+    let currentCategory = "all";
+    let searchQuery = "";
+    let sortMethod = "featured";
+    let cart = []; // Array of { id, productId, name, price, variant, quantity, image }
+
+    // Selected variants dictionary: { [productId]: selectedVariantString }
+    const selectedVariants = {};
+
+    /* -------------------------------------------------------------
+       INITIALIZATION
+    -------------------------------------------------------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+      // Set default selected variant for every product
+      PRODUCTS.forEach(p => {
+        selectedVariants[p.id] = p.variants[0];
+      });
+
+      // Quick Nav WhatsApp link setup
+      const defaultGeneralMsg = encodeURIComponent(`Hi ${STORE_CONFIG.brandName}, I'm browsing your online catalog and have a general question.`);
+      document.getElementById("navWhatsappBtn").href = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${defaultGeneralMsg}`;
+
+      // Load saved cart from localStorage if exists
+      loadCartFromStorage();
+
+      // Render catalog
+      renderProducts();
+      updateCartUI();
+    });
+
+    /* -------------------------------------------------------------
+       RENDER PRODUCTS FUNCTION
+    -------------------------------------------------------------- */
+    function renderProducts() {
+      const grid = document.getElementById("productGrid");
+      const noFound = document.getElementById("noProductsFound");
+      const counter = document.getElementById("productCounter");
+
+      // Filter by category
+      let filtered = PRODUCTS.filter(p => {
+        return (currentCategory === "all" || p.category.toLowerCase() === currentCategory.toLowerCase());
+      });
+
+      // Filter by search
+      if (searchQuery.trim() !== "") {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(q) || 
+          p.description.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q)
+        );
+      }
+
+      // Sort
+      if (sortMethod === "price-asc") {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (sortMethod === "price-desc") {
+        filtered.sort((a, b) => b.price - a.price);
+      }
+
+      // Update counter
+      counter.innerText = `Showing ${filtered.length} product${filtered.length === 1 ? '' : 's'}`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = "";
+        noFound.classList.remove("hidden");
+        return;
+      }
+
+      noFound.classList.add("hidden");
+
+      grid.innerHTML = filtered.map(prod => {
+        // Badge styles
+        let badgeColorClass = "bg-zinc-800 text-zinc-300 border-zinc-700";
+        if (prod.badgeType === "stock") {
+          badgeColorClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+        } else if (prod.badgeType === "limited") {
+          badgeColorClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+        } else if (prod.badgeType === "bestseller") {
+          badgeColorClass = "bg-indigo-500/10 text-indigo-300 border-indigo-500/20";
+        }
+
+        const currentVar = selectedVariants[prod.id] || prod.variants[0];
+
+        return `
+          <div class="bg-surface-card rounded-2xl border border-surface-border overflow-hidden flex flex-col group hover:border-zinc-700 transition-all duration-300 hover:shadow-xl hover:shadow-black/40">
+            
+            <!-- Image Area -->
+            <div class="relative w-full h-72 overflow-hidden bg-zinc-900">
+              <img 
+                src="${prod.image}" 
+                alt="${prod.name}" 
+                loading="lazy" 
+                class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+              />
+              
+              <!-- Badge -->
+              <div class="absolute top-3 left-3">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide border ${badgeColorClass}">
+                  <span class="w-1.5 h-1.5 rounded-full ${prod.badgeType === 'stock' ? 'bg-emerald-400' : (prod.badgeType === 'limited' ? 'bg-amber-400' : 'bg-indigo-400')}"></span>
+                  ${prod.badge}
+                </span>
+              </div>
+
+              <!-- Category watermark -->
+              <span class="absolute bottom-3 right-3 text-[10px] uppercase font-bold tracking-widest text-white/70 bg-black/50 px-2 py-0.5 rounded backdrop-blur-sm">
+                ${prod.category}
+              </span>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+              <div>
+                <div class="flex items-baseline justify-between gap-2">
+                  <h3 class="text-base font-bold text-white group-hover:text-zinc-200 transition">${prod.name}</h3>
+                  <span class="text-base font-extrabold text-white">${STORE_CONFIG.currencySymbol}${prod.price.toFixed(2)}</span>
+                </div>
+                <p class="mt-2 text-xs text-zinc-400 leading-relaxed line-clamp-2">${prod.description}</p>
+              </div>
+
+              <!-- Variant / Options Selection -->
+              <div class="space-y-1.5">
+                <label class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 flex justify-between">
+                  <span>Option / Size</span>
+                  <span class="text-zinc-500 font-normal">Choose one</span>
+                </label>
+                <div class="flex flex-wrap gap-1.5">
+                  ${prod.variants.map(v => `
+                    <button 
+                      type="button"
+                      onclick="selectVariant('${prod.id}', '${v}')"
+                      class="px-2.5 py-1 text-xs rounded-lg border transition ${
+                        currentVar === v 
+                          ? 'bg-zinc-200 text-black border-zinc-200 font-bold' 
+                          : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'
+                      }">
+                      ${v}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Dual CTAs: Single Order via WhatsApp + Add to Multi-Item Cart -->
+              <div class="pt-2 grid grid-cols-2 gap-2">
+                <!-- Direct 1-Click WhatsApp Link -->
+                <button 
+                  onclick="orderSingleProductWhatsApp('${prod.id}')"
+                  class="w-full py-2.5 px-3 rounded-xl bg-brand-whatsapp hover:bg-brand-whatsappHover active:scale-95 text-black font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-md shadow-brand-whatsapp/20"
+                  title="Direct WhatsApp checkout for this item">
+                  <i class="ph-bold ph-whatsapp-logo text-base"></i>
+                  <span>Order Now</span>
+                </button>
+
+                <!-- Add to Inquiry Tray -->
+                <button 
+                  onclick="addToCart('${prod.id}')" 
+                  class="w-full py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-white font-semibold text-xs flex items-center justify-center gap-1.5 border border-zinc-700 transition"
+                  title="Add to multi-item inquiry cart">
+                  <i class="ph-bold ph-plus text-xs"></i>
+                  <span>Add to Tray</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* -------------------------------------------------------------
+       VARIANT SELECTOR
+    -------------------------------------------------------------- */
+    function selectVariant(productId, variantValue) {
+      selectedVariants[productId] = variantValue;
+      renderProducts();
+    }
+
+    /* -------------------------------------------------------------
+       SEARCH & FILTERS
+    -------------------------------------------------------------- */
+    function filterCategory(cat) {
+      currentCategory = cat;
+
+      // Update Desktop Nav Pills
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.classList.add('bg-zinc-800', 'text-white');
+          btn.classList.remove('text-zinc-400');
+        } else {
+          btn.classList.remove('bg-zinc-800', 'text-white');
+          btn.classList.add('text-zinc-400');
+        }
+      });
+
+      // Update Mobile Nav Pills
+      document.querySelectorAll('.mobile-cat-pill').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.classList.add('bg-zinc-800', 'text-white');
+          btn.classList.remove('text-zinc-400');
+        } else {
+          btn.classList.remove('bg-zinc-800', 'text-white');
+          btn.classList.add('text-zinc-400');
+        }
+      });
+
+      renderProducts();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val;
+      renderProducts();
+    }
+
+    function handleSort(val) {
+      sortMethod = val;
+      renderProducts();
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = "";
+      searchQuery = "";
+      filterCategory('all');
+    }
+
+    /* -------------------------------------------------------------
+       DIRECT SINGLE-PRODUCT WHATSAPP ORDER
+    -------------------------------------------------------------- */
+    function orderSingleProductWhatsApp(productId) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      const chosenVariant = selectedVariants[productId] || product.variants[0];
+
+      const messageText = 
+`Hello ${STORE_CONFIG.brandName}! 👋
+I would like to order this item:
+
+🛍️ *Product:* ${product.name}
+📐 *Variant / Size:* ${chosenVariant}
+💰 *Price:* ${STORE_CONFIG.currencySymbol}${product.price.toFixed(2)}
+📦 *Item Code:* ${product.id}
+
+Could you please confirm availability and provide payment details? Thanks!`;
+
+      const targetUrl = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(messageText)}`;
+      window.open(targetUrl, '_blank');
+    }
+
+    /* -------------------------------------------------------------
+       INQUIRY CART MANAGEMENT
+    -------------------------------------------------------------- */
+    function addToCart(productId) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      const chosenVariant = selectedVariants[productId] || product.variants[0];
+      const cartItemId = `${productId}-${chosenVariant}`;
+
+      const existingIndex = cart.findIndex(item => item.cartItemId === cartItemId);
+
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+      } else {
+        cart.push({
+          cartItemId: cartItemId,
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          variant: chosenVariant,
+          image: product.image,
+          quantity: 1
+        });
+      }
+
+      saveCartToStorage();
+      updateCartUI();
+      showToast(`Added "${product.name}" (${chosenVariant}) to tray`);
+    }
+
+    function updateCartItemQty(cartItemId, delta) {
+      const idx = cart.findIndex(i => i.cartItemId === cartItemId);
+      if (idx === -1) return;
+
+      cart[idx].quantity += delta;
+      if (cart[idx].quantity <= 0) {
+        cart.splice(idx, 1);
+      }
+
+      saveCartToStorage();
+      updateCartUI();
+    }
+
+    function removeCartItem(cartItemId) {
+      cart = cart.filter(i => i.cartItemId !== cartItemId);
+      saveCartToStorage();
+      updateCartUI();
+    }
+
+    function clearAllCart() {
+      cart = [];
+      saveCartToStorage();
+      updateCartUI();
+      showToast("Inquiry tray emptied");
+    }
+
+    function updateCartUI() {
+      const countBadge = document.getElementById("cartCountBadge");
+      const floatingBadge = document.getElementById("floatingBadgeCount");
+      const floatingTotal = document.getElementById("floatingCartTotal");
+      const floatingBtn = document.getElementById("floatingCartBtn");
+      const cartItemsList = document.getElementById("cartItemsList");
+      const cartTotalItemsCount = document.getElementById("cartTotalItemsCount");
+      const cartTotalPrice = document.getElementById("cartTotalPrice");
+      const sendBtn = document.getElementById("sendWhatsAppOrderBtn");
+
+      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+      const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+      // Badges
+      if (totalItems > 0) {
+        countBadge.classList.remove("hidden");
+        countBadge.innerText = totalItems;
+        floatingBadge.innerText = totalItems;
+        floatingTotal.innerText = `${STORE_CONFIG.currencySymbol}${totalPrice.toFixed(2)}`;
+        floatingBtn.classList.remove("translate-y-24");
+      } else {
+        countBadge.classList.add("hidden");
+        floatingBtn.classList.add("translate-y-24");
+      }
+
+      cartTotalItemsCount.innerText = totalItems;
+      cartTotalPrice.innerText = `${STORE_CONFIG.currencySymbol}${totalPrice.toFixed(2)}`;
+
+      // Render Drawer Item List
+      if (cart.length === 0) {
+        cartItemsList.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center py-16 text-zinc-500">
+            <i class="ph ph-shopping-bag text-5xl mb-3 text-zinc-600"></i>
+            <p class="text-sm font-semibold text-zinc-400">Your inquiry tray is empty</p>
+            <p class="text-xs max-w-xs mt-1">Browse the catalog and add products to combine them into a single inquiry.</p>
+          </div>
+        `;
+        sendBtn.disabled = true;
+      } else {
+        sendBtn.disabled = false;
+        cartItemsList.innerHTML = cart.map(item => `
+          <div class="flex items-center gap-3 bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
+            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+            <div class="flex-grow min-w-0">
+              <h4 class="text-xs font-bold text-white truncate">${item.name}</h4>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Option: <span class="text-zinc-200">${item.variant}</span></p>
+              <div class="text-xs font-semibold text-white mt-1">
+                ${STORE_CONFIG.currencySymbol}${(item.price * item.quantity).toFixed(2)}
+                ${item.quantity > 1 ? `<span class="text-[10px] text-zinc-500 font-normal">(${STORE_CONFIG.currencySymbol}${item.price.toFixed(2)} ea)</span>` : ''}
+              </div>
+            </div>
+            
+            <!-- Quantity Controls -->
+            <div class="flex flex-col items-end gap-2">
+              <button onclick="removeCartItem('${item.cartItemId}')" class="text-zinc-500 hover:text-red-400 transition" title="Remove item">
+                <i class="ph ph-trash text-sm"></i>
+              </button>
+              <div class="flex items-center border border-zinc-700 bg-surface-card rounded-lg text-xs overflow-hidden">
+                <button onclick="updateCartItemQty('${item.cartItemId}', -1)" class="px-2 py-1 hover:bg-zinc-700 text-zinc-300">-</button>
+                <span class="px-2 py-0.5 text-white font-medium">${item.quantity}</span>
+                <button onclick="updateCartItemQty('${item.cartItemId}', 1)" class="px-2 py-1 hover:bg-zinc-700 text-zinc-300">+</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    /* -------------------------------------------------------------
+       MULTI-ITEM WHATSAPP ORDER DISPATCH
+    -------------------------------------------------------------- */
+    function dispatchWhatsAppCartOrder() {
+      if (cart.length === 0) return;
+
+      const customerName = document.getElementById("customerNameInput").value.trim();
+      const customerNotes = document.getElementById("customerNotesInput").value.trim();
+
+      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+      const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+      // Construct itemized message
+      let message = `Hello ${STORE_CONFIG.brandName}! 👋\n`;
+      message += `I would like to place an order for the following items:\n\n`;
+
+      cart.forEach((item, index) => {
+        const itemSubtotal = (item.price * item.quantity).toFixed(2);
+        message += `${index + 1}. *${item.name}*\n`;
+        message += `   • Option: ${item.variant}\n`;
+        message += `   • Quantity: ${item.quantity}\n`;
+        message += `   • Subtotal: ${STORE_CONFIG.currencySymbol}${itemSubtotal}\n\n`;
+      });
+
+      message += `------------------------------\n`;
+      message += `📦 *Total Items:* ${totalItems}\n`;
+      message += `💰 *Estimated Total:* ${STORE_CONFIG.currencySymbol}${totalPrice.toFixed(2)}\n`;
+
+      if (customerName) {
+        message += `👤 *Customer Name:* ${customerName}\n`;
+      }
+      if (customerNotes) {
+        message += `📍 *Notes / Address:* ${customerNotes}\n`;
+      }
+
+      message += `------------------------------\n`;
+      message += `Please confirm availability, shipping fee, and payment instructions. Thank you!`;
+
+      const targetUrl = `https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
+      window.open(targetUrl, '_blank');
+    }
+
+    /* -------------------------------------------------------------
+       MODAL / DRAWER CONTROLS
+    -------------------------------------------------------------- */
+    function toggleCartModal(show) {
+      const drawer = document.getElementById("cartDrawer");
+      const backdrop = document.getElementById("cartModalBackdrop");
+
+      if (show) {
+        backdrop.classList.remove("pointer-events-none", "opacity-0");
+        backdrop.classList.add("opacity-100");
+        drawer.classList.remove("translate-x-full");
+      } else {
+        backdrop.classList.add("opacity-0", "pointer-events-none");
+        backdrop.classList.remove("opacity-100");
+        drawer.classList.add("translate-x-full");
+      }
+    }
+
+    /* -------------------------------------------------------------
+       LOCAL STORAGE HELPERS
+    -------------------------------------------------------------- */
+    function saveCartToStorage() {
+      try {
+        localStorage.setItem("aura_cart_v1", JSON.stringify(cart));
+      } catch (e) {
+        console.warn("Local storage write prevented", e);
+      }
+    }
+
+    function loadCartFromStorage() {
+      try {
+        const saved = localStorage.getItem("aura_cart_v1");
+        if (saved) {
+          cart = JSON.parse(saved);
+        }
+      } catch (e) {
+        cart = [];
+      }
+    }
+
+    /* -------------------------------------------------------------
+       TOAST FEEDBACK
+    -------------------------------------------------------------- */
+    let toastTimeout;
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      const msg = document.getElementById("toastMsg");
+
+      msg.innerText = text;
+      toast.classList.remove("opacity-0", "pointer-events-none", "translate-y-4");
+      toast.classList.add("opacity-100", "translate-y-0");
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add("opacity-0", "pointer-events-none", "translate-y-4");
+        toast.classList.remove("opacity-100", "translate-y-0");
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
